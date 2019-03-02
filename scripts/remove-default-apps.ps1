@@ -16,46 +16,65 @@ $apps = @(
     "Microsoft.BingFinance"
     "Microsoft.BingNews"
     "Microsoft.BingSports"
+    "Microsoft.BingTranslator"
     "Microsoft.BingWeather"
     #"Microsoft.FreshPaint"
-    "Microsoft.Getstarted"
+    "Microsoft.Microsoft3DViewer"
     "Microsoft.MicrosoftOfficeHub"
     "Microsoft.MicrosoftSolitaireCollection"
+    "Microsoft.MicrosoftPowerBIForWindows"
+    "Microsoft.MinecraftUWP"
     #"Microsoft.MicrosoftStickyNotes"
+    "Microsoft.NetworkSpeedTest"
     "Microsoft.Office.OneNote"
     #"Microsoft.OneConnect"
     "Microsoft.People"
+    "Microsoft.Print3D"
     "Microsoft.SkypeApp"
+    "Microsoft.Wallet"
     #"Microsoft.Windows.Photos"
     "Microsoft.WindowsAlarms"
     #"Microsoft.WindowsCalculator"
     "Microsoft.WindowsCamera"
+    "microsoft.windowscommunicationsapps"
     "Microsoft.WindowsMaps"
     "Microsoft.WindowsPhone"
     "Microsoft.WindowsSoundRecorder"
     #"Microsoft.WindowsStore"
     "Microsoft.XboxApp"
+    "Microsoft.XboxGameOverlay"
+    "Microsoft.XboxGamingOverlay"
+    "Microsoft.XboxSpeechToTextOverlay"
+    "Microsoft.Xbox.TCUI"
     "Microsoft.ZuneMusic"
     "Microsoft.ZuneVideo"
-    "microsoft.windowscommunicationsapps"
-    "Microsoft.MinecraftUWP"
-    "Microsoft.MicrosoftPowerBIForWindows"
-    "Microsoft.NetworkSpeedTest"
+    
     
     # Threshold 2 apps
     "Microsoft.CommsPhone"
     "Microsoft.ConnectivityStore"
+    "Microsoft.GetHelp"
+    "Microsoft.Getstarted"
     "Microsoft.Messaging"
     "Microsoft.Office.Sway"
     "Microsoft.OneConnect"
     "Microsoft.WindowsFeedbackHub"
 
+    # Creators Update apps
+    "Microsoft.Microsoft3DViewer"
+    #"Microsoft.MSPaint"
 
     #Redstone apps
     "Microsoft.BingFoodAndDrink"
     "Microsoft.BingTravel"
     "Microsoft.BingHealthAndFitness"
     "Microsoft.WindowsReadingList"
+
+    # Redstone 5 apps
+    "Microsoft.MixedReality.Portal"
+    "Microsoft.ScreenSketch"
+    "Microsoft.XboxGamingOverlay"
+    "Microsoft.YourPhone"
 
     # non-Microsoft
     "9E2F88E3.Twitter"
@@ -64,6 +83,7 @@ $apps = @(
     "ShazamEntertainmentLtd.Shazam"
     "king.com.CandyCrushSaga"
     "king.com.CandyCrushSodaSaga"
+    "king.com.BubbleWitch3Saga"
     "king.com.*"
     "ClearChannelRadioDigital.iHeartRadio"
     "4DF9E0F8.Netflix"
@@ -86,7 +106,17 @@ $apps = @(
     "D5EA27B7.Duolingo-LearnLanguagesforFree"
     "46928bounde.EclipseManager"
     "ActiproSoftwareLLC.562882FEEB491" # next one is for the Code Writer from Actipro Software LLC
-
+    "DolbyLaboratories.DolbyAccess"
+    "SpotifyAB.SpotifyMusic"
+    "A278AB0D.DisneyMagicKingdoms"
+    "WinZipComputing.WinZipUniversal"
+    "CAF9E577.Plex"  
+    "7EE7776C.LinkedInforWindows"
+    "613EBCEA.PolarrPhotoEditorAcademicEdition"
+    "Fitbit.FitbitCoach"
+    "DolbyLaboratories.DolbyAccess"
+    "Microsoft.BingNews"
+    "NORDCURRENT.COOKINGFEVER"
 
     # apps which cannot be removed using Remove-AppxPackage
     #"Microsoft.BioEnrollment"
@@ -96,6 +126,9 @@ $apps = @(
     #"Microsoft.XboxGameCallableUI"
     #"Microsoft.XboxIdentityProvider"
     #"Windows.ContactSupport"
+
+    # apps which other apps depend on
+    "Microsoft.Advertising.Xaml"
 )
 
 foreach ($app in $apps) {
@@ -108,6 +141,27 @@ foreach ($app in $apps) {
         Remove-AppxProvisionedPackage -Online
 }
 
+
+# Prevents Apps from re-installing
+force-mkdir "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "FeatureManagementEnabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "OemPreInstalledAppsEnabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "PreInstalledAppsEnabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SilentInstalledAppsEnabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "ContentDeliveryAllowed" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "PreInstalledAppsEverEnabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContentEnabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338388Enabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338389Enabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-314559Enabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338387Enabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SubscribedContent-338393Enabled" 0
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" "SystemPaneSuggestionsEnabled" 0
+
+force-mkdir "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore"
+Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore" "AutoDownload" 2
+
 # Prevents "Suggested Applications" returning
-force-mkdir "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Cloud Content"
-Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Cloud Content" "DisableWindowsConsumerFeatures" 1
+force-mkdir "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" "DisableWindowsConsumerFeatures" 1
+
