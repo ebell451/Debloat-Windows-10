@@ -8,11 +8,14 @@
 # Please see the related issue:
 # <https://github.com/W4RH4WK/Debloat-Windows-10/issues/79>
 
-Import-Module -DisableNameChecking $PSScriptRoot\..\lib\force-mkdir.psm1
+Import-Module -DisableNameChecking $PSScriptRoot\..\lib\New-FolderForced.psm1
 
 Write-Output "Disabling telemetry via Group Policies"
-force-mkdir "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
-Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0
+New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0
+
+# Entries related to Akamai have been reported to cause issues with Widevine
+# DRM.
 
 Write-Output "Adding telemetry domains to hosts file"
 $hosts_file = "$env:systemroot\System32\drivers\etc\hosts"
@@ -105,7 +108,7 @@ $domains = @(
     "secure.flashtalking.com"
     "services.wes.df.telemetry.microsoft.com"
     "settings-sandbox.data.microsoft.com"
-    "settings-win.data.microsoft.com"
+    #"settings-win.data.microsoft.com"       # may cause issues with Windows Updates
     "sls.update.microsoft.com.akadns.net"
     #"sls.update.microsoft.com.nsatc.net"    # may cause issues with Windows Updates
     "sqm.df.telemetry.microsoft.com"
@@ -152,9 +155,9 @@ $domains = @(
     "e3843.g.akamaiedge.net"
     "flightingserviceweurope.cloudapp.net"
     #"sls.update.microsoft.com"                 # may cause issues with Windows Updates
-    "static.ads-twitter.com"
+    "static.ads-twitter.com"                    # may cause issues with Twitter login
     "www-google-analytics.l.google.com"
-    "p.static.ads-twitter.com"
+    "p.static.ads-twitter.com"                  # may cause issues with Twitter login
     "hubspot.net.edge.net"
     "e9483.a.akamaiedge.net"
 
@@ -211,7 +214,7 @@ $ips = @(
     "204.79.197.200"
     "23.218.212.69"
     "65.39.117.230"
-    "65.52.108.33"
+    "65.52.108.33"   # Causes problems with Microsoft Store
     "65.55.108.23"
     "64.4.54.254"
 )
