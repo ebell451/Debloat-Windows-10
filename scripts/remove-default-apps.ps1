@@ -11,6 +11,7 @@ do {} until (Elevate-Privileges SeTakeOwnershipPrivilege)
 Write-Output "Uninstalling default apps"
 $apps = @(
     # default Windows 10 apps
+    "Microsoft.549981C3F5F10" #Cortana
     "Microsoft.3DBuilder"
     "Microsoft.Appconnector"
     "Microsoft.BingFinance"
@@ -74,7 +75,6 @@ $apps = @(
     "Microsoft.MixedReality.Portal"
     "Microsoft.ScreenSketch"
     "Microsoft.XboxGamingOverlay"
-    "Microsoft.YourPhone"
 
     # non-Microsoft
     "2FE3CB00.PicsArt-PhotoStudio"
@@ -131,13 +131,14 @@ $apps = @(
     "Microsoft.Advertising.Xaml"
 )
 
+$appxprovisionedpackage = Get-AppxProvisionedPackage -Online
+
 foreach ($app in $apps) {
     Write-Output "Trying to remove $app"
 
     Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage -AllUsers
 
-    Get-AppXProvisionedPackage -Online |
-        Where-Object DisplayName -EQ $app |
+    ($appxprovisionedpackage).Where( {$_.DisplayName -EQ $app}) |
         Remove-AppxProvisionedPackage -Online
 }
 

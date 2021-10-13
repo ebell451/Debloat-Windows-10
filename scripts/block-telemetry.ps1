@@ -85,13 +85,13 @@ $domains = @(
     "hostedocsp.globalsign.com"
     "i1.services.social.microsoft.com"
     "i1.services.social.microsoft.com.nsatc.net"
-    "ipv6.msftncsi.com"
-    "ipv6.msftncsi.com.edgesuite.net"
+    #"ipv6.msftncsi.com"                    # Issues may arise where Windows 10 thinks it doesn't have internet
+    #"ipv6.msftncsi.com.edgesuite.net"      # Issues may arise where Windows 10 thinks it doesn't have internet
     "lb1.www.ms.akadns.net"
     "live.rads.msn.com"
     "m.adnxs.com"
     "msedge.net"
-    "msftncsi.com"
+    #"msftncsi.com"
     "msnbot-65-55-108-23.search.msn.com"
     "msntest.serving-sys.com"
     "oca.telemetry.microsoft.com"
@@ -140,7 +140,7 @@ $domains = @(
     "win10.ipv6.microsoft.com"
     "www.bingads.microsoft.com"
     "www.go.microsoft.akadns.net"
-    "www.msftncsi.com"
+    #"www.msftncsi.com"                         # Issues may arise where Windows 10 thinks it doesn't have internet
     "client.wns.windows.com"
     #"wdcp.microsoft.com"                       # may cause issues with Windows Defender Cloud-based protection
     #"dns.msftncsi.com"                         # This causes Windows to think it doesn't have internet
@@ -205,6 +205,7 @@ foreach ($domain in $domains) {
 
 Write-Output "Adding telemetry ips to firewall"
 $ips = @(
+    # Windows telemetry
     "134.170.30.202"
     "137.116.81.24"
     "157.56.106.189"
@@ -217,6 +218,24 @@ $ips = @(
     "65.52.108.33"   # Causes problems with Microsoft Store
     "65.55.108.23"
     "64.4.54.254"
+
+    # NVIDIA telemetry
+    "8.36.80.197"
+    "8.36.80.224"
+    "8.36.80.252"
+    "8.36.113.118"
+    "8.36.113.141"
+    "8.36.80.230"
+    "8.36.80.231"
+    "8.36.113.126"
+    "8.36.80.195"
+    "8.36.80.217"
+    "8.36.80.237"
+    "8.36.80.246"
+    "8.36.113.116"
+    "8.36.113.139"
+    "8.36.80.244"
+    "216.228.121.209"
 )
 Remove-NetFirewallRule -DisplayName "Block Telemetry IPs" -ErrorAction SilentlyContinue
 New-NetFirewallRule -DisplayName "Block Telemetry IPs" -Direction Outbound `
