@@ -8,11 +8,14 @@
 # Please see the related issue:
 # <https://github.com/W4RH4WK/Debloat-Windows-10/issues/79>
 
-Import-Module -DisableNameChecking $PSScriptRoot\..\lib\force-mkdir.psm1
+Import-Module -DisableNameChecking $PSScriptRoot\..\lib\New-FolderForced.psm1
 
 Write-Output "Disabling telemetry via Group Policies"
-force-mkdir "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
-Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0
+New-FolderForced -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0
+
+# Entries related to Akamai have been reported to cause issues with Widevine
+# DRM.
 
 Write-Output "Adding telemetry domains to hosts file"
 $hosts_file = "$env:systemroot\System32\drivers\etc\hosts"
@@ -59,7 +62,6 @@ $domains = @(
     "cds26.ams9.msecn.net"
     "choice.microsoft.com"
     "choice.microsoft.com.nsatc.net"
-    "c.msn.com"                                 # can cause issues with Skype
     "compatexchange.cloudapp.net"
     "corpext.msitadfs.glbdns2.microsoft.com"
     "corp.sts.microsoft.com"
@@ -83,13 +85,13 @@ $domains = @(
     "hostedocsp.globalsign.com"
     "i1.services.social.microsoft.com"
     "i1.services.social.microsoft.com.nsatc.net"
-    "ipv6.msftncsi.com"
-    "ipv6.msftncsi.com.edgesuite.net"
+    #"ipv6.msftncsi.com"                    # Issues may arise where Windows 10 thinks it doesn't have internet
+    #"ipv6.msftncsi.com.edgesuite.net"      # Issues may arise where Windows 10 thinks it doesn't have internet
     "lb1.www.ms.akadns.net"
     "live.rads.msn.com"
     "m.adnxs.com"
     "msedge.net"
-    "msftncsi.com"
+    #"msftncsi.com"
     "msnbot-65-55-108-23.search.msn.com"
     "msntest.serving-sys.com"
     "oca.telemetry.microsoft.com"
@@ -106,8 +108,9 @@ $domains = @(
     "secure.flashtalking.com"
     "services.wes.df.telemetry.microsoft.com"
     "settings-sandbox.data.microsoft.com"
-    "settings-win.data.microsoft.com"
+    #"settings-win.data.microsoft.com"       # may cause issues with Windows Updates
     "sls.update.microsoft.com.akadns.net"
+    #"sls.update.microsoft.com.nsatc.net"    # may cause issues with Windows Updates
     "sqm.df.telemetry.microsoft.com"
     "sqm.telemetry.microsoft.com"
     "sqm.telemetry.microsoft.com.nsatc.net"
@@ -120,7 +123,6 @@ $domains = @(
     "telecommand.telemetry.microsoft.com"
     "telecommand.telemetry.microsoft.com.nsatc.net"
     "telemetry.appex.bing.net"
-    "telemetry.appex.bing.net:443"
     "telemetry.microsoft.com"
     "telemetry.urs.microsoft.com"
     "vortex-bn2.metron.live.com.nsatc.net"
@@ -138,24 +140,61 @@ $domains = @(
     "win10.ipv6.microsoft.com"
     "www.bingads.microsoft.com"
     "www.go.microsoft.akadns.net"
-    "www.msftncsi.com"
+    #"www.msftncsi.com"                         # Issues may arise where Windows 10 thinks it doesn't have internet
+    "client.wns.windows.com"
+    #"wdcp.microsoft.com"                       # may cause issues with Windows Defender Cloud-based protection
+    #"dns.msftncsi.com"                         # This causes Windows to think it doesn't have internet
+    #"storeedgefd.dsx.mp.microsoft.com"         # breaks Windows Store
+    "wdcpalt.microsoft.com"
+    "settings-ssl.xboxlive.com"
+    "settings-ssl.xboxlive.com-c.edgekey.net"
+    "settings-ssl.xboxlive.com-c.edgekey.net.globalredir.akadns.net"
+    "e87.dspb.akamaidege.net"
+    "insiderservice.microsoft.com"
+    "insiderservice.trafficmanager.net"
+    "e3843.g.akamaiedge.net"
+    "flightingserviceweurope.cloudapp.net"
+    #"sls.update.microsoft.com"                 # may cause issues with Windows Updates
+    "static.ads-twitter.com"                    # may cause issues with Twitter login
+    "www-google-analytics.l.google.com"
+    "p.static.ads-twitter.com"                  # may cause issues with Twitter login
+    "hubspot.net.edge.net"
+    "e9483.a.akamaiedge.net"
+
+    #"www.google-analytics.com"
+    #"padgead2.googlesyndication.com"
+    #"mirror1.malwaredomains.com"
+    #"mirror.cedia.org.ec"
+    "stats.g.doubleclick.net"
+    "stats.l.doubleclick.net"
+    "adservice.google.de"
+    "adservice.google.com"
+    "googleads.g.doubleclick.net"
+    "pagead46.l.doubleclick.net"
+    "hubspot.net.edgekey.net"
+    "insiderppe.cloudapp.net"                   # Feedback-Hub
+    "livetileedge.dsx.mp.microsoft.com"
 
     # extra
     "fe2.update.microsoft.com.akadns.net"
     "s0.2mdn.net"
-    "statsfe2.update.microsoft.com.akadns.net",
+    "statsfe2.update.microsoft.com.akadns.net"
     "survey.watson.microsoft.com"
     "view.atdmt.com"
-    "watson.microsoft.com",
+    "watson.microsoft.com"
     "watson.ppe.telemetry.microsoft.com"
-    "watson.telemetry.microsoft.com",
+    "watson.telemetry.microsoft.com"
     "watson.telemetry.microsoft.com.nsatc.net"
     "wes.df.telemetry.microsoft.com"
-    "ui.skype.com",                             # can cause issues with Skype
-    "pricelist.skype.com"                       # can cause issues with Skype
-    "apps.skype.com"                            # can cause issues with Skype
     "m.hotmail.com"
-    "s.gateway.messenger.live.com"              # can cause issues with Skype
+
+    # can cause issues with Skype (#79) or other services (#171)
+    "apps.skype.com"
+    "c.msn.com"
+    # "login.live.com"                  # prevents login to outlook and other live apps
+    "pricelist.skype.com"
+    "s.gateway.messenger.live.com"
+    "ui.skype.com"
 )
 Write-Output "" | Out-File -Encoding ASCII -Append $hosts_file
 foreach ($domain in $domains) {
@@ -166,6 +205,7 @@ foreach ($domain in $domains) {
 
 Write-Output "Adding telemetry ips to firewall"
 $ips = @(
+    # Windows telemetry
     "134.170.30.202"
     "137.116.81.24"
     "157.56.106.189"
@@ -175,9 +215,27 @@ $ips = @(
     "204.79.197.200"
     "23.218.212.69"
     "65.39.117.230"
-    "65.52.108.33"
+    "65.52.108.33"   # Causes problems with Microsoft Store
     "65.55.108.23"
     "64.4.54.254"
+
+    # NVIDIA telemetry
+    "8.36.80.197"
+    "8.36.80.224"
+    "8.36.80.252"
+    "8.36.113.118"
+    "8.36.113.141"
+    "8.36.80.230"
+    "8.36.80.231"
+    "8.36.113.126"
+    "8.36.80.195"
+    "8.36.80.217"
+    "8.36.80.237"
+    "8.36.80.246"
+    "8.36.113.116"
+    "8.36.113.139"
+    "8.36.80.244"
+    "216.228.121.209"
 )
 Remove-NetFirewallRule -DisplayName "Block Telemetry IPs" -ErrorAction SilentlyContinue
 New-NetFirewallRule -DisplayName "Block Telemetry IPs" -Direction Outbound `
